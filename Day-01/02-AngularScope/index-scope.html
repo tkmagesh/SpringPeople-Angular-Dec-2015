@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title></title>
+    <script src="jquery-2.1.4.js"></script>
+    <script src="angular.js"></script>
+    <script>
+    $(document).ready(function(){
+
+        angular.bootstrap(document.body, []);
+        window.scope = angular.element(document.body).scope();
+
+    });
+    </script>
+</head>
+<body>
+    <input type="text" name="" id="txtName">
+    <div id="divName"></div>
+</body>
+</html>

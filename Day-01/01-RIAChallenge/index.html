@@ -41,33 +41,24 @@
         this.onSalaryChange = null;
         */
 
-        var _data = {
-            basic : 0,
-            hra : 0,
-            da : 0,
-            tax : 0,
-            salary : 0
-        };
+        var _data = {};
         this.get = function(attrName){
             return _data[attrName];
         };
         this.set = function(attrName, value){
             _data[attrName] = value;
             //trigger change notification for 'attrName'
-            var listnerFn = _events[attrName];
-            if (typeof listnerFn === 'function')
-                listnerFn();
+            var listenerFns = _events[attrName] || [];
+            listenerFns.forEach(function(listenerFn){
+                if (typeof listenerFn === 'function')
+                    listenerFn();
+            });
         };
 
-        var _events = {
-            basic : null,
-            hra : null,
-            da : null,
-            tax : null,
-            salary : null
-        };
+        var _events = {};
         this.onChange = function(attrName, listenerFn){
-            _events[attrName] = listenerFn;
+            _events[attrName] = _events[attrName] || [];
+            _events[attrName].push(listenerFn);
         }
         this.calculate = function(){
             var gross = this.get('basic') + this.get('hra') + this.get('da');
