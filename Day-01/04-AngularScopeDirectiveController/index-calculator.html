@@ -32,31 +32,19 @@
             this.salary = net;
         }
     }
-
-
-    //View
-    /*$(document).ready(function(){
-        //creating scope
-        angular.bootstrap(document.body, []);
-        window.scope = angular.element(document.body).scope();
-
-        scope.$apply(function(){
-            scope.calculator = new SalaryCalculator();
-        });
-    })*/
-
     var calculatorApp = angular.module('calculatorApp', []);
     calculatorApp.run(function($rootScope){
-        //console.log(arguments);
-        window.rootScope = $rootScope;
-        $rootScope.calculator = new SalaryCalculator();
+        $rootScope.appName = 'Calculator App';
+    });
+    calculatorApp.controller("calculatorController", function($scope){
+        $scope.calculator = new SalaryCalculator();
     })
     </script>
 </head>
 <body ng-app="calculatorApp">
     <h1>Salary Calculator</h1>
     <hr>
-    <div class="content">
+    <div class="content" ng-controller="calculatorController">
         <div class="field">
             <label for="">Basic :</label>
             <input type="text" name="" id="txtBasic" ng-model="calculator.basic">
