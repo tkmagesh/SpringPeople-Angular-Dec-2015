@@ -14,10 +14,25 @@
     6. Search for bugs - done
     7. Sort the bugs - done
     8. Improvise the bug display - done
-    9. Modify the bug to track the 'createdAt' (datetime) and display the same
+    9. Modify the bug to track the 'createdAt' (datetime) and display the same - done
     10. Persist the bugs in the localStorage
     11. Persist the bugs in the server
     12. Categorize the bugs
+    -->
+    <!--
+    window.localStorage
+        key value store
+        both key and value should be strings
+
+        - setItem(key,value)
+        - getItem(key) => value
+        - removeItem(key)
+        - key(index) => key at location index
+        - length
+        - clear()
+
+        object to json -> angular.toJson(obj)
+        json to object -> angular.fromJson(str)
     -->
     <style>
         .closed{
@@ -41,7 +56,24 @@
     <script src="moment.js"></script>
     <script src="angular.js"></script>
     <script>
-        var bugTrackerApp = angular.module("bugTrackerApp", []);
+        var utils = angular.module("utils", []);
+        utils.value("defaultTrimLength", 30);
+        utils.filter("trimText", function(defaultTrimLength){
+
+            return function(data, trimLength){
+                trimLength = trimLength || defaultTrimLength;
+                return data.length < trimLength ? data : data.substr(0,trimLength)+'...';
+            }
+        });
+
+        utils.value("momentApi", moment);
+        utils.filter("toMoment", function(momentApi){
+            return function(date){
+                return momentApi(date).fromNow();
+            };
+        });
+
+        var bugTrackerApp = angular.module("bugTrackerApp", ["utils"]);
 
         /*bugTrackerApp.value("Bug" , function Bug(defaults){
             this.name = defaults.name || '';
@@ -92,14 +124,6 @@
 
         });
 
-        bugTrackerApp.value("defaultTrimLength", 30);
-        bugTrackerApp.filter("trimText", function(defaultTrimLength){
-
-            return function(data, trimLength){
-                trimLength = trimLength || defaultTrimLength;
-                return data.length < trimLength ? data : data.substr(0,trimLength)+'...';
-            }
-        });
 
         /*bugTrackerApp.filter("toClosedCount", function(){
             return function(bugs){
@@ -115,11 +139,7 @@
             }
         });
 
-        bugTrackerApp.filter("toMoment", function(){
-            return function(date){
-                return moment(date).fromNow();
-            };
-        });
+
     </script>
 </head>
 <body ng-app="bugTrackerApp">
