@@ -12,8 +12,8 @@
     4. Remove closed Bugs - done
     5. Display Statistics - done
     6. Search for bugs - done
-    7. Sort the bugs
-    8. Improvise the bug display
+    7. Sort the bugs - done
+    8. Improvise the bug display - done
     9. Modify the bug to track the 'createdAt' (datetime) and display the same
     10. Persist the bugs in the localStorage
     11. Persist the bugs in the server
@@ -36,45 +36,77 @@
     <script src="angular.js"></script>
     <script>
         var bugTrackerApp = angular.module("bugTrackerApp", []);
-        bugTrackerApp.controller("bugsController", function($scope){
+
+        /*bugTrackerApp.value("Bug" , function Bug(defaults){
+            this.name = defaults.name || '';
+            this.isClosed = defaults.isClosed || false;
+            this.toggle = function(){
+                this.isClosed = !this.isClosed;
+            }
+        });*/
+        bugTrackerApp.value("defaultBugName", "[Default Bug]");
+
+        bugTrackerApp.factory("Bug", function(defaultBugName){
+            function Bug(defaults){
+                this.name = defaults.name || defaultBugName;
+                this.isClosed = defaults.isClosed || false;
+            }
+            Bug.prototype.toggle = function(){
+                this.isClosed = !this.isClosed;
+            }
+            return Bug;
+        });
+
+
+        bugTrackerApp.controller("bugsController", function($scope, Bug){
+
             $scope.bugs = [
-                {name : 'Data validation failure', isClosed : true},
-                {name : 'Server communication erratic', isClosed : false},
-                {name : 'Incorrect data', isClosed : false},
-                {name : 'User authentication failure', isClosed : false},
-                {name : 'Application response time too high', isClosed : true},
-                {name : 'Nothing works', isClosed : false},
+                new Bug({name : 'Data validation failure', isClosed : true}),
+                new Bug({name : 'Server communication erratic', isClosed : false}),
+                new Bug({name : 'Incorrect data', isClosed : false}),
+                new Bug({name : 'User authentication failure', isClosed : false}),
+                new Bug({name : 'Application response time too high', isClosed : true}),
+                new Bug({name : 'Nothing works', isClosed : false}),
             ];
             $scope.newBug = '';
             $scope.addBug = function(){
-                var bugToAdd = {
-                    name : $scope.newBug,
-                    isClosed : false
-                };
+                var bugToAdd = new Bug({ name : $scope.newBug });
                 $scope.bugs.push(bugToAdd);
                 $scope.newBug = '';
             };
             $scope.toggle = function(bug){
-                bug.isClosed = !bug.isClosed;
+                bug.toggle();
             };
             $scope.removeClosed = function(){
-                /*for(var i= $scope.bugs.length-1; i>=0; i--){
-                    var bug = $scope.bugs[i];
-                    if (bug.isClosed)
-                        $scope.bugs.splice(i,1);
-                }*/
                 $scope.bugs.forEach(function(bug, index){
                     if (bug.isClosed) $scope.bugs.splice(index,1);
                 });
             };
-            $scope.getClosedCount = function(){
-                console.log('getClosedCount triggered');
-                return $scope.bugs.filter(function(bug){
-                    return bug.isClosed;
-                }).length;
-            };
+
         });
 
+        bugTrackerApp.value("defaultTrimLength", 30);
+        bugTrackerApp.filter("trimText", function(defaultTrimLength){
+
+            return function(data, trimLength){
+                trimLength = trimLength || defaultTrimLength;
+                return data.length < trimLength ? data : data.substr(0,trimLength)+'...';
+            }
+        });
+
+        /*bugTrackerApp.filter("toClosedCount", function(){
+            return function(bugs){
+                 return bugs.filter(function(bug){
+                    return bug.isClosed;
+                }).length;
+            }
+        });*/
+        bugTrackerApp.filter("toClosedCount", function($filter){
+            var builtinFilter = $filter('filter');
+            return function(bugs){
+                return builtinFilter(bugs, {isClosed : true}).length
+            }
+        });
     </script>
 </head>
 <body ng-app="bugTrackerApp">
@@ -83,7 +115,7 @@
     <input type="text" ng-model="emp.name">
     <div class="content" ng-controller="bugsController">
         <div class="stats">
-            <span class="closed">{{getClosedCount()}}</span>
+            <span class="closed">{{  bugs | toClosedCount }}</span>
             <span> / </span>
             <span>{{bugs.length}}</span>
         </div>
@@ -96,9 +128,9 @@
         </div>
         <div class="sort">
             <label for="">Order By :</label>
-            <input type="text" name="" id="">
+            <input type="text" ng-model="bugOrder">
             <label for="">Descending ? :</label>
-            <input type="checkbox" name="" id="">
+            <input type="checkbox" ng-model="isDescending">
         </div>
         <div class="list">
             <label for="">Bug :</label>
@@ -107,10 +139,10 @@
             <input type="button" value="Remove Closed" ng-click="removeClosed()">
             <ol>
                 <li
-                    ng-repeat="bug in bugs | filter:searchBug"
+                    ng-repeat="bug in bugs | filter:searchBug | orderBy:bugOrder:isDescending"
                     ng-class="{closed : bug.isClosed}"
                     ng-click="toggle(bug)"
-                >{{bug.name}}</li>
+                >{{bug.name | trimText:20}}</li>
             </ol>
         </div>
     </div>
