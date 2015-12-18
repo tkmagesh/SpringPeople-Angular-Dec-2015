@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Bug Tracker</title>
+    <!--
+    Use Cases
+    =========
+    1. Display a list of bugs
+    2. Add a new Bug
+    3. Toggle the closed status of a bug
+    4. Remove closed Bugs
+    5. Display Statistics
+    6. Search for bugs
+    7. Sort the bugs
+    8. Improvise the bug display
+    9. Modify the bug to track the 'createdAt' (datetime) and display the same
+    10. Persist the bugs in the localStorage
+    11. Persist the bugs in the server
+    12. Categorize the bugs
+    -->
+    <style>
+        .closed{
+            color : red;
+            text-decoration: line-through;
+            font-style: italic;
+            font-weight: bold;
+        }
+        .stats{
+            font-size: 18pt;
+        }
+        div{
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Bug Tracker</h1>
+    <hr>
+    <div class="content">
+        <div class="stats">
+            <span class="closed">3</span>
+            <span> / </span>
+            <span>5</span>
+        </div>
+        <div class="search">
+            <label for="">Search :</label>
+            <input type="text" name="" id="">
+            <label for="">Closed ? :</label>
+            <input type="checkbox" name="" id="">
+        </div>
+        <div class="sort">
+            <label for="">Order By :</label>
+            <input type="text" name="" id="">
+            <label for="">Descending ? :</label>
+            <input type="checkbox" name="" id="">
+        </div>
+        <div class="list">
+            <label for="">Bug :</label>
+            <input type="text" name="" id="">
+            <input type="button" value="Add Bug">
+            <input type="button" value="Remove Closed">
+            <ol>
+                <li class="closed">Data validation error</li>
+                <li>Server communication failure</li>
+            </ol>
+        </div>
+    </div>
+</body>
+</html>
