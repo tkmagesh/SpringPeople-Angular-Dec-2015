@@ -32,7 +32,13 @@
         div{
             margin-bottom: 10px;
         }
+        .timeStamp{
+            color : gray;
+            font-style: italic;
+            font-size: small;
+        }
     </style>
+    <script src="moment.js"></script>
     <script src="angular.js"></script>
     <script>
         var bugTrackerApp = angular.module("bugTrackerApp", []);
@@ -50,6 +56,7 @@
             function Bug(defaults){
                 this.name = defaults.name || defaultBugName;
                 this.isClosed = defaults.isClosed || false;
+                this.createdAt = defaults.createdAt || new Date();
             }
             Bug.prototype.toggle = function(){
                 this.isClosed = !this.isClosed;
@@ -61,12 +68,12 @@
         bugTrackerApp.controller("bugsController", function($scope, Bug){
 
             $scope.bugs = [
-                new Bug({name : 'Data validation failure', isClosed : true}),
-                new Bug({name : 'Server communication erratic', isClosed : false}),
-                new Bug({name : 'Incorrect data', isClosed : false}),
-                new Bug({name : 'User authentication failure', isClosed : false}),
-                new Bug({name : 'Application response time too high', isClosed : true}),
-                new Bug({name : 'Nothing works', isClosed : false}),
+                new Bug({name : 'Data validation failure', isClosed : true, createdAt : new Date(2015, 11, 9, 0, 0, 0)}),
+                new Bug({name : 'Server communication erratic', isClosed : false, createdAt : new Date(2015, 11, 10, 0, 0, 0)}),
+                new Bug({name : 'Incorrect data', isClosed : false, createdAt : new Date(2015, 11, 10, 0, 0, 0)}),
+                new Bug({name : 'User authentication failure', isClosed : false, createdAt : new Date(2015, 10, 9, 0, 0, 0)}),
+                new Bug({name : 'Application response time too high', isClosed : true, createdAt : new Date(2015, 11, 10, 10, 0, 0)}),
+                new Bug({name : 'Nothing works', isClosed : false, createdAt : new Date(2015, 12, 11, 11, 0, 0)}),
             ];
             $scope.newBug = '';
             $scope.addBug = function(){
@@ -107,6 +114,12 @@
                 return builtinFilter(bugs, {isClosed : true}).length
             }
         });
+
+        bugTrackerApp.filter("toMoment", function(){
+            return function(date){
+                return moment(date).fromNow();
+            };
+        });
     </script>
 </head>
 <body ng-app="bugTrackerApp">
@@ -142,7 +155,10 @@
                     ng-repeat="bug in bugs | filter:searchBug | orderBy:bugOrder:isDescending"
                     ng-class="{closed : bug.isClosed}"
                     ng-click="toggle(bug)"
-                >{{bug.name | trimText:20}}</li>
+                >
+                    <span>{{bug.name | trimText:20}}</span>
+                    <span class="timeStamp"> - {{bug.createdAt | toMoment}}</span>
+                </li>
             </ol>
         </div>
     </div>
