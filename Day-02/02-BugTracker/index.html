@@ -6,9 +6,9 @@
     <!--
     Use Cases
     =========
-    1. Display a list of bugs
-    2. Add a new Bug
-    3. Toggle the closed status of a bug
+    1. Display a list of bugs - done
+    2. Add a new Bug - done
+    3. Toggle the closed status of a bug - done
     4. Remove closed Bugs
     5. Display Statistics
     6. Search for bugs
@@ -33,15 +33,38 @@
             margin-bottom: 10px;
         }
     </style>
+    <script src="angular.js"></script>
+    <script>
+        var bugTrackerApp = angular.module("bugTrackerApp", []);
+        bugTrackerApp.controller("bugsController", function($scope){
+            $scope.bugs = [
+                {name : 'Data validation failure', isClosed : true},
+                {name : 'Server communication erratic', isClosed : false},
+            ];
+            $scope.newBug = '';
+            $scope.addBug = function(){
+                var bugToAdd = {
+                    name : $scope.newBug,
+                    isClosed : false
+                };
+                $scope.bugs.push(bugToAdd);
+                $scope.newBug = '';
+            };
+            $scope.toggle = function(bug){
+                bug.isClosed = !bug.isClosed;
+            };
+        });
+
+    </script>
 </head>
-<body>
+<body ng-app="bugTrackerApp">
     <h1>Bug Tracker</h1>
     <hr>
-    <div class="content">
+    <div class="content" ng-controller="bugsController">
         <div class="stats">
             <span class="closed">3</span>
             <span> / </span>
-            <span>5</span>
+            <span>{{bugs.length}}</span>
         </div>
         <div class="search">
             <label for="">Search :</label>
@@ -57,12 +80,15 @@
         </div>
         <div class="list">
             <label for="">Bug :</label>
-            <input type="text" name="" id="">
-            <input type="button" value="Add Bug">
+            <input type="text" ng-model="newBug">
+            <input type="button" value="Add Bug" ng-click="addBug()">
             <input type="button" value="Remove Closed">
             <ol>
-                <li class="closed">Data validation error</li>
-                <li>Server communication failure</li>
+                <li
+                    ng-repeat="bug in bugs track by $index"
+                    ng-class="{closed : bug.isClosed}"
+                    ng-click="toggle(bug)"
+                >{{bug}}</li>
             </ol>
         </div>
     </div>
