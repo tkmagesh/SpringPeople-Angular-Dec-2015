@@ -9,9 +9,9 @@
     1. Display a list of bugs - done
     2. Add a new Bug - done
     3. Toggle the closed status of a bug - done
-    4. Remove closed Bugs
-    5. Display Statistics
-    6. Search for bugs
+    4. Remove closed Bugs - done
+    5. Display Statistics - done
+    6. Search for bugs - done
     7. Sort the bugs
     8. Improvise the bug display
     9. Modify the bug to track the 'createdAt' (datetime) and display the same
@@ -40,6 +40,10 @@
             $scope.bugs = [
                 {name : 'Data validation failure', isClosed : true},
                 {name : 'Server communication erratic', isClosed : false},
+                {name : 'Incorrect data', isClosed : false},
+                {name : 'User authentication failure', isClosed : false},
+                {name : 'Application response time too high', isClosed : true},
+                {name : 'Nothing works', isClosed : false},
             ];
             $scope.newBug = '';
             $scope.addBug = function(){
@@ -53,6 +57,22 @@
             $scope.toggle = function(bug){
                 bug.isClosed = !bug.isClosed;
             };
+            $scope.removeClosed = function(){
+                /*for(var i= $scope.bugs.length-1; i>=0; i--){
+                    var bug = $scope.bugs[i];
+                    if (bug.isClosed)
+                        $scope.bugs.splice(i,1);
+                }*/
+                $scope.bugs.forEach(function(bug, index){
+                    if (bug.isClosed) $scope.bugs.splice(index,1);
+                });
+            };
+            $scope.getClosedCount = function(){
+                console.log('getClosedCount triggered');
+                return $scope.bugs.filter(function(bug){
+                    return bug.isClosed;
+                }).length;
+            };
         });
 
     </script>
@@ -60,17 +80,19 @@
 <body ng-app="bugTrackerApp">
     <h1>Bug Tracker</h1>
     <hr>
+    <input type="text" ng-model="emp.name">
     <div class="content" ng-controller="bugsController">
         <div class="stats">
-            <span class="closed">3</span>
+            <span class="closed">{{getClosedCount()}}</span>
             <span> / </span>
             <span>{{bugs.length}}</span>
         </div>
         <div class="search">
             <label for="">Search :</label>
-            <input type="text" name="" id="">
+            <input type="text" ng-model="searchBug.name">
             <label for="">Closed ? :</label>
-            <input type="checkbox" name="" id="">
+            <input type="checkbox" ng-model="searchBug.isClosed">
+            <input type="button" value="Show All" ng-click="searchBug.isClosed = undefined">
         </div>
         <div class="sort">
             <label for="">Order By :</label>
@@ -82,13 +104,13 @@
             <label for="">Bug :</label>
             <input type="text" ng-model="newBug">
             <input type="button" value="Add Bug" ng-click="addBug()">
-            <input type="button" value="Remove Closed">
+            <input type="button" value="Remove Closed" ng-click="removeClosed()">
             <ol>
                 <li
-                    ng-repeat="bug in bugs track by $index"
+                    ng-repeat="bug in bugs | filter:searchBug"
                     ng-class="{closed : bug.isClosed}"
                     ng-click="toggle(bug)"
-                >{{bug}}</li>
+                >{{bug.name}}</li>
             </ol>
         </div>
     </div>
