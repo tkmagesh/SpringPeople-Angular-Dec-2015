@@ -77,6 +77,7 @@
         bugTrackerApp.value("defaultBugName", "[Default Bug]");
 
         bugTrackerApp.factory("Bug", function(defaultBugName){
+            console.log("Bug Factory invoked");
             function Bug(defaults){
                 this.id = defaults.id || 0;
                 this.name = defaults.name || defaultBugName;
@@ -89,18 +90,19 @@
             return Bug;
         });
 
-        bugTrackerApp.factory("bugStorage", function(){
+        bugTrackerApp.service("bugStorage", function(){
+            console.log("bugStorage Service invoked");
             var currentBugId = 0;
             var storage = window.localStorage;
-            function saveBug(bug){
+            this.save = function saveBug(bug){
                 if (!bug.id) bug.id = ++currentBugId;
                 storage.setItem(bug.id, angular.toJson(bug));
                 return bug;
             }
-            function removeBug(bug){
+            this.remove = function removeBug(bug){
                 storage.removeItem(bug.id);
             }
-            function getAll(){
+            this.getAll = function getAll(){
                 var result = [];
                 for(var i=0; i<storage.length; i++){
                     var data = storage.getItem(storage.key(i));
@@ -110,101 +112,37 @@
                 }
                 return result;
             }
-            return {
-                save : saveBug,
-                remove : removeBug,
-                getAll : getAll
-            };
         })
 
-        bugTrackerApp.service("bugService", function($http, Bug, $q){
-
-           this.getAll = function(){
-
-              /* var deferred = $q.defer();
-
-                var allBugsPromise = $http.get("/bugs");
-                allBugsPromise.then(function(response){
-                    var result = response.data.map(function(bugData){
-                        return new Bug(bugData);
-                    });
-                    deferred.resolve(result);
-               });
-
-               return deferred.promise;*/
-
-                /*var allBugsPromise = $http.get("/bugs");
-                var newPromise = allBugsPromise.then(function(response){
-                    var result = response.data.map(function(bugData){
-                        return new Bug(bugData);
-                    });
-                    return result;
-               });
-               return newPromise;*/
-
-               return $http
-                    .get("/bugs")
-                    .then(function(response){
-                        return response.data.map(function(bugData){
-                            return new Bug(bugData);
-                        });
-                    });
-
-           };
-           this.save = function(bug){
-               if (bug.id){
-                    return $http.put("/bugs/" + bug.id, bug)
-                        .then(function(result){
-                            return new Bug(result.data);
-                        });
-               } else {
-                   return $http.post("/bugs", bug)
-                        .then(function(result){
-                            return new Bug(result.data);
-                        });
-               }
-
-           };
-
-           this.remove = function(bug){
-               return $http.delete("/bugs/" + bug.id);
-           };
-        });
-
-        bugTrackerApp.controller("bugsController", function($scope, Bug, $http, bugService){
-
-            $scope.bugs = [];
-            bugService
-                .getAll()
-                .then(function(result){
-                    $scope.bugs = result;
-                });
-
+        bugTrackerApp.controller("bugsController", function($scope, Bug, bugStorage){
+            console.log("In bugsController");
+            bugStorage.currentTime = new Date();
+            $scope.bugs = bugStorage.getAll();
 
             $scope.newBug = '';
             $scope.addBug = function(){
-                var bugToAdd = new Bug({ name : $scope.newBug });
-                bugService
-                    .save(bugToAdd)
-                    .then(function(newBug){
-                        $scope.bugs.push(newBug);
-                    })
+                var bugToAdd = bugStorage.save(new Bug({ name : $scope.newBug }));
+                $scope.bugs.push(bugToAdd);
                 $scope.newBug = '';
             };
             $scope.toggle = function(bug){
                 bug.toggle();
-                bugService.save(bug)
+                bugStorage.save(bug);
             };
             $scope.removeClosed = function(){
                 $scope.bugs.forEach(function(bug, index){
                     if (bug.isClosed){
-                        bugService.remove(bug);
+                        bugStorage.remove(bug);
                         $scope.bugs.splice(index,1);
                     }
                 });
             };
 
         });
+        bugTrackerApp.controller("dummyController", function(bugStorage, Bug){
+            console.log("current time from bugStorage service is ", bugStorage.currentTime);
+            console.log("In dummy controller");
+        })
         bugTrackerApp.filter("toClosedCount", function($filter){
             var builtinFilter = $filter('filter');
             return function(bugs){
@@ -253,5 +191,6 @@
             </ol>
         </div>
     </div>
+    <div ng-controller="dummyController"></div>
 </body>
 </html>

@@ -3,20 +3,26 @@
     {
       "id": 1,
       "name": "Data validation failure",
-      "isClosed": true,
-      "createdAt": "2015-12-19T04:09:22.159Z"
-    },
-    {
-      "id": 2,
-      "name": "Server communication erratic",
       "isClosed": false,
-      "createdAt": "2015-12-19T04:09:29.180Z"
+      "createdAt": "2015-12-19T04:09:22.159Z"
     },
     {
       "id": 3,
       "name": "User authentication failure ",
       "isClosed": false,
       "createdAt": "2015-12-19T04:14:56.430Z"
+    },
+    {
+      "id": 4,
+      "name": "Promises are failing",
+      "isClosed": false,
+      "createdAt": "2015-12-19T07:21:26.924Z"
+    },
+    {
+      "id": 5,
+      "name": "User interface breaks",
+      "isClosed": false,
+      "createdAt": "2015-12-19T07:22:24.483Z"
     }
   ]
 }
