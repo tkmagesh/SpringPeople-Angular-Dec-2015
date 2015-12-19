@@ -1,0 +1,22 @@
+{
+  "bugs": [
+    {
+      "id": 1,
+      "name": "Data validation failure",
+      "isClosed": true,
+      "createdAt": "2015-12-19T04:09:22.159Z"
+    },
+    {
+      "id": 2,
+      "name": "Server communication erratic",
+      "isClosed": false,
+      "createdAt": "2015-12-19T04:09:29.180Z"
+    },
+    {
+      "id": 3,
+      "name": "User authentication failure ",
+      "isClosed": false,
+      "createdAt": "2015-12-19T04:14:56.430Z"
+    }
+  ]
+}
