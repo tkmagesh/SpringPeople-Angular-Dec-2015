@@ -117,24 +117,31 @@
             };
         })
 
-        bugTrackerApp.controller("bugsController", function($scope, Bug, bugStorage){
+        bugTrackerApp.controller("bugsController", function($scope, Bug, $http){
 
-            $scope.bugs = bugStorage.getAll();
+            $scope.bugs = [];
+
+            var allBugsPromise = $http.get("/bugs");
+            allBugsPromise.then(function(response){
+                $scope.bugs = response.data.map(function(bugData){
+                    return new Bug(bugData);
+                });
+            });
 
             $scope.newBug = '';
             $scope.addBug = function(){
-                var bugToAdd = bugStorage.save(new Bug({ name : $scope.newBug }));
+                /*var bugToAdd = bugStorage.save(new Bug({ name : $scope.newBug }));
                 $scope.bugs.push(bugToAdd);
-                $scope.newBug = '';
+                $scope.newBug = '';*/
             };
             $scope.toggle = function(bug){
                 bug.toggle();
-                bugStorage.save(bug);
+                /*bugStorage.save(bug);*/
             };
             $scope.removeClosed = function(){
                 $scope.bugs.forEach(function(bug, index){
                     if (bug.isClosed){
-                        bugStorage.remove(bug);
+                        /*bugStorage.remove(bug);*/
                         $scope.bugs.splice(index,1);
                     }
                 });
