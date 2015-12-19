@@ -99,7 +99,9 @@
                 },
                 $get : function(){
                         var currentBugId = 0;
-                        var storage = storageOption === 'local' ? window.localStorage : window.sessionStorage;
+                        var storage = storageOption === 'local' ?
+                            window.localStorage : window.sessionStorage;
+
                         function saveBug(bug){
                             if (!bug.id) bug.id = ++currentBugId;
                             storage.setItem(bug.id, angular.toJson(bug));

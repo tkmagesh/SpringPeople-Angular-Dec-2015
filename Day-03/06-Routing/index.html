@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Routing App</title>
+    <script src="angular.js"></script>
+    <script src="angular-route.js"></script>
+    <script>
+    angular
+        .module("routingApp", ["ngRoute"])
+        .config(function($routeProvider){
+            $routeProvider
+                .when("/products", {
+                    //template : '<h3>Products</h3>'
+                    templateUrl : "templates/productsTemplate.html",
+                    controller : "productsController"
+                })
+                .when("/customers", {
+                    //template : '<h3>Customers</h3>'
+                    templateUrl : "templates/customersTemplate.html"
+                })
+                .when("/products/:id", {
+                    templateUrl : "templates/productInfoTemplate.html",
+                    controller : "productInfoController"
+                })
+                .otherwise({
+                    redirectTo : "/products"
+                });
+        })
+        .service("productService", function(){
+            this.getAll = function(){
+                return [
+                    {id : 1, name : "Pen", cost : 10, units : 20, desc : "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Doloribus incidunt rerum, harum quo, odit soluta, sequi aut itaque ab asperiores iusto perspiciatis dolores aliquid, magnam odio! Libero quo, deleniti eligendi.Lorem ipsum dolor sit amet, consectetur adipisicing elit. Facere quas odio fugiat, quaerat, voluptas ex voluptatibus cum sint eos doloremque, molestiae pariatur fuga. Omnis a placeat nesciunt minus culpa in?"},
+                    {id : 2, name : "Hen", cost : 100, units : 5, desc : "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Doloribus incidunt rerum, harum quo, odit soluta, sequi aut itaque ab asperiores iusto perspiciatis dolores aliquid, magnam odio! Libero quo, deleniti eligendi.Lorem ipsum dolor sit amet, consectetur adipisicing elit. Facere quas odio fugiat, quaerat, voluptas ex voluptatibus cum sint eos doloremque, molestiae pariatur fuga. Omnis a placeat nesciunt minus culpa in?"},
+                    {id : 3, name : "Den", cost : 200, units : 10, desc : "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Doloribus incidunt rerum, harum quo, odit soluta, sequi aut itaque ab asperiores iusto perspiciatis dolores aliquid, magnam odio! Libero quo, deleniti eligendi.Lorem ipsum dolor sit amet, consectetur adipisicing elit. Facere quas odio fugiat, quaerat, voluptas ex voluptatibus cum sint eos doloremque, molestiae pariatur fuga. Omnis a placeat nesciunt minus culpa in?"},
+                    {id : 4, name : "Zen", cost : 10000, units : 1, desc : "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Doloribus incidunt rerum, harum quo, odit soluta, sequi aut itaque ab asperiores iusto perspiciatis dolores aliquid, magnam odio! Libero quo, deleniti eligendi.Lorem ipsum dolor sit amet, consectetur adipisicing elit. Facere quas odio fugiat, quaerat, voluptas ex voluptatibus cum sint eos doloremque, molestiae pariatur fuga. Omnis a placeat nesciunt minus culpa in?"}
+                ]
+            }
+        })
+        .controller("productsController", function($scope, productService){
+            $scope.products = productService.getAll();
+        })
+        .controller("productInfoController", function($scope, productService, $routeParams){
+            var productId = parseInt($routeParams.id);
+            $scope.product = productService.getAll().filter(function(p){
+                return p.id === productId;
+            })[0];
+        });
+
+    </script>
+</head>
+<body ng-app="routingApp">
+    <h1>Flopkart</h1>
+    <hr>
+    <a href="#/products">Products</a> <a href="#/customers"> Customers </a>
+    <div ng-view></div>
+</body>
+</html>
