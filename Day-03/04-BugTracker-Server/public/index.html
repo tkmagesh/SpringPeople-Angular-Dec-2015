@@ -117,16 +117,50 @@
             };
         })
 
-        bugTrackerApp.controller("bugsController", function($scope, Bug, $http){
+        bugTrackerApp.service("bugService", function($http, Bug, $q){
+
+           this.getAll = function(){
+
+              /* var deferred = $q.defer();
+
+                var allBugsPromise = $http.get("/bugs");
+                allBugsPromise.then(function(response){
+                    var result = response.data.map(function(bugData){
+                        return new Bug(bugData);
+                    });
+                    deferred.resolve(result);
+               });
+
+               return deferred.promise;*/
+
+                /*var allBugsPromise = $http.get("/bugs");
+                var newPromise = allBugsPromise.then(function(response){
+                    var result = response.data.map(function(bugData){
+                        return new Bug(bugData);
+                    });
+                    return result;
+               });
+               return newPromise;*/
+
+               return $http
+                    .get("/bugs")
+                    .then(function(response){
+                        return response.data.map(function(bugData){
+                            return new Bug(bugData);
+                        });
+                    });
+
+           }
+        });
+
+        bugTrackerApp.controller("bugsController", function($scope, Bug, $http, bugService){
 
             $scope.bugs = [];
-
-            var allBugsPromise = $http.get("/bugs");
-            allBugsPromise.then(function(response){
-                $scope.bugs = response.data.map(function(bugData){
-                    return new Bug(bugData);
-                });
+            var p = bugService.getAll();
+            p.then(function(result){
+                $scope.bugs = result;
             });
+
 
             $scope.newBug = '';
             $scope.addBug = function(){
