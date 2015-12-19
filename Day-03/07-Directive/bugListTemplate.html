@@ -1,0 +1,16 @@
+
+
+<ol>
+        <li
+            ng-repeat="bug in list"
+        >
+            <span>{{bug.name | trimText:20}}</span>
+            <span class="timeStamp"> - {{bug.createdAt | toMoment}}</span>
+        </li>
+    </ol>
+
+<!--
+ | filter:searchBug | orderBy:bugOrder:isDescending"
+            ng-class="{closed : bug.isClosed}"
+            ng-click="toggle(bug)"
+-->

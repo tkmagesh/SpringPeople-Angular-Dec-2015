@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Directive</title>
+    <style>
+        .highlight{
+            border : 2px solid grey;
+            background-color: #e7e7e7;
+            padding: 10px;
+            border-radius: 5px;
+        }
+    </style>
+    <script src="jquery-2.1.4.js"></script>
+    <script src="angular.js"></script>
+
+    <script>
+    angular.module("myApp", [])
+        .run(function($rootScope){
+            $rootScope.message = 'Welcome to angular';
+            $rootScope.messageCleared = function(){
+                console.log('message cleared');
+            };
+        })
+        .directive("hello", function(){
+            return {
+                restrict : 'EA',
+                scope : {
+                    msg : '=',
+                    onclear : '&'
+                },
+                template : '<h1>My Directive</h1><div class="content"></div>',
+                link : function(scope, element, attrs){
+
+                            scope.$watch('msg', function(newValue, oldValue){
+                                if (element.hasClass('highlight'))
+                                    element.find('.content').html(newValue);
+                            });
+                            element.bind("click", function(){
+                                if (element.hasClass('highlight')){
+                                    element.removeClass('highlight')
+                                    element.find('.content').html("click");
+                                    scope.$apply(function(){
+                                        scope.msg = '';
+                                        scope.onclear();
+                                    });
+                                } else {
+                                    element.addClass('highlight')
+                                    element.find('.content').html(scope.msg);
+                                }
+                            })
+                        }
+            };
+        });
+    </script>
+</head>
+<body ng-app="myApp">
+    <div>
+        <span>Parent :</span>
+        <input type="text" ng-model="message">
+        <div ng-show="showMessage">
+            I think the message is cleared
+        </div>
+    </div>
+    <div hello msg='message' onclear='showMessage=true'>Click</div>
+</body>
+</html>
