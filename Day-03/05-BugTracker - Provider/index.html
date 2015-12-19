@@ -89,32 +89,42 @@
             return Bug;
         });
 
-        bugTrackerApp.factory("bugStorage", function(){
-            var currentBugId = 0;
-            var storage = window.localStorage;
-            function saveBug(bug){
-                if (!bug.id) bug.id = ++currentBugId;
-                storage.setItem(bug.id, angular.toJson(bug));
-                return bug;
-            }
-            function removeBug(bug){
-                storage.removeItem(bug.id);
-            }
-            function getAll(){
-                var result = [];
-                for(var i=0; i<storage.length; i++){
-                    var data = storage.getItem(storage.key(i));
-                    var bugObj = angular.fromJson(data);
-                    currentBugId = currentBugId > bugObj.id ? currentBugId : bugObj.id;
-                    result.push(bugObj);
-                }
-                return result;
-            }
+        bugTrackerApp.constant("defaultStorageOption", "local");
+
+        bugTrackerApp.provider("bugStorage", function(defaultStorageOption){
+            var storageOption = defaultStorageOption;
             return {
-                save : saveBug,
-                remove : removeBug,
-                getAll : getAll
-            };
+                setStorageOption : function(option){
+                    storageOption = option;
+                },
+                $get : function(){
+                        var currentBugId = 0;
+                        var storage = storageOption === 'local' ? window.localStorage : window.sessionStorage;
+                        function saveBug(bug){
+                            if (!bug.id) bug.id = ++currentBugId;
+                            storage.setItem(bug.id, angular.toJson(bug));
+                            return bug;
+                        }
+                        function removeBug(bug){
+                            storage.removeItem(bug.id);
+                        }
+                        function getAll(){
+                            var result = [];
+                            for(var i=0; i<storage.length; i++){
+                                var data = storage.getItem(storage.key(i));
+                                var bugObj = angular.fromJson(data);
+                                currentBugId = currentBugId > bugObj.id ? currentBugId : bugObj.id;
+                                result.push(bugObj);
+                            }
+                            return result;
+                        }
+                        return {
+                            save : saveBug,
+                            remove : removeBug,
+                            getAll : getAll
+                        };
+                    }
+            }
         })
 
         bugTrackerApp.controller("bugsController", function($scope, Bug, bugStorage){
@@ -148,7 +158,11 @@
             }
         });
 
-        bugTrackerApp.provider("dummyService", function(){ /*during config*/
+        bugTrackerApp.config(function(bugStorageProvider){
+            //bugStorageProvider.setStorageOption('session');
+        });
+       /* bugTrackerApp.provider("dummyService", function(){
+            //during config
             console.log("during config");
             var _name = 'Run Service';
 
@@ -156,7 +170,8 @@
                 setName : function(value){
                     _name = value;
                 },
-                $get : function(){ /*during run*/
+                $get : function(){
+                    //during run
                     console.log("during run");
                     return {
                         name : _name
@@ -164,14 +179,15 @@
                 }
             }
         });
-        bugTrackerApp.config(function(dummyServiceProvider){
+        bugTrackerApp.config(function(dummyServiceProvider, bugStorageProvider){
+            console.log("bugStorageProvider => ", bugStorageProvider);
             console.log("dummyServiceProvider => ", dummyServiceProvider);
             dummyServiceProvider.setName('Provider demo');
         })
         bugTrackerApp.run(function(dummyService){
             console.log("dummyService => ", dummyService);
             console.log(dummyService.name);
-        });
+        });*/
     </script>
 </head>
 <body ng-app="bugTrackerApp">
